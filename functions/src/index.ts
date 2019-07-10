@@ -14,28 +14,22 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-const createIfDoesntExist = (pin : string) : Promise<boolean> => {
+const createIfDoesntExist = async (pin : string) : Promise<boolean> => {
   const pinRef = db.collection('pins').doc(pin);
-  return db.runTransaction((tx) =>
-    tx.get(pinRef)
-      .then(pinDoc => {
-        if (pinDoc.exists) {
-          return false;
-        }
-        tx.create(pinRef, {});
-        return true;
-      }));
+  return db.runTransaction(async (tx) => {
+    const pinDoc = await tx.get(pinRef);
+    if (!pinDoc.exists) {
+      await tx.create(pinRef, {});
+      return true;
+    }
+    return false;
+  });
 };
 
-const generateNonExistingPin = () : Promise<string> => {
+const generateNonExistingPin = async () : Promise<string> => {
   const pin = getRndInteger(0, 9999).toString().padStart(4, '0');
-  return createIfDoesntExist(pin)
-    .then(created => {
-      if (created) {
-        return pin;
-      }
-      return generateNonExistingPin();
-    });
+  const created = await createIfDoesntExist(pin);
+  return created ? pin : generateNonExistingPin();
 };
 
 app.post('/', (request, response) => {
