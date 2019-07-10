@@ -13,13 +13,18 @@ admin.initializeApp({
   credential: admin.credential.applicationDefault()
 });
 const db = admin.firestore();
+const EXPIRATION_OFFSET = 1000*60*60;
+
+const expirationTimestamp = () : number => new Date().getTime() + EXPIRATION_OFFSET;
 
 const createIfDoesntExist = async (pin : string) : Promise<boolean> => {
   const pinRef = db.collection('pins').doc(pin);
   return db.runTransaction(async (tx) => {
     const pinDoc = await tx.get(pinRef);
     if (!pinDoc.exists) {
-      await tx.create(pinRef, {});
+      await tx.create(pinRef, {
+        expirationTimestamp: expirationTimestamp()
+      });
       return true;
     }
     return false;
