@@ -20,5 +20,7 @@ app.post('/', (request, response) => {
       return response.status(500).send({ error: err }) });
 });
 
-export const generatePin = functions.https.onRequest(app);
+
+
+export const pins = functions.https.onRequest(app);
 export const expireOldPins = functions.pubsub.schedule('every 1 hour').onRun(expiration(db));
