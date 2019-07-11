@@ -14,8 +14,27 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 const EXPIRATION_OFFSET = 1000*60*60;
+const EXPIRATION_TIMESTAMP_KEY = "expirationTimestamp"
 
 const expirationTimestamp = () : number => new Date().getTime() + EXPIRATION_OFFSET;
+
+const findExpired = (now : number) : Promise<FirebaseFirestore.QuerySnapshot> => {
+  return db.collection('pins')
+    .where(EXPIRATION_TIMESTAMP_KEY, '>', now)
+    .get();
+};
+
+const deleteDocs = async (docs : FirebaseFirestore.QuerySnapshot) : Promise<number> => {
+  if (docs.size > 0) {
+    const batch = db.batch();
+    docs.forEach((doc) => { 
+      console.log(`Expiring pin ${doc}`);
+      return batch.delete(doc.ref);
+    });
+    await batch.commit()
+  }
+  return docs.size; 
+};
 
 const createIfDoesntExist = async (pin : string) : Promise<boolean> => {
   const pinRef = db.collection('pins').doc(pin);
@@ -23,7 +42,7 @@ const createIfDoesntExist = async (pin : string) : Promise<boolean> => {
     const pinDoc = await tx.get(pinRef);
     if (!pinDoc.exists) {
       await tx.create(pinRef, {
-        expirationTimestamp: expirationTimestamp()
+        [EXPIRATION_TIMESTAMP_KEY]: expirationTimestamp()
       });
       return true;
     }
@@ -46,3 +65,7 @@ app.post('/', (request, response) => {
 });
 
 export const generatePin = functions.https.onRequest(app);
+export const expireOldPins = functions.pubsub.schedule('every 1 hour').onRun(async (ctx) => {
+  const expired = await findExpired(new Date().getTime());
+  await deleteDocs(expired); 
+});
