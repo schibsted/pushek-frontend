@@ -4,6 +4,7 @@ import * as express from 'express';
 import expiration from './expiration'
 import generate from './generate';
 import register from'./register';
+import pushApp from './examplepush';
 
 const app = express();
 admin.initializeApp({
@@ -33,3 +34,4 @@ app.post('/:pin', (request, response) => {
 
 export const pins = functions.https.onRequest(app);
 export const expireOldPins = functions.pubsub.schedule('every 1 hours').onRun(expiration(db));
+export const examplePush = functions.https.onRequest(pushApp(admin.messaging()));
