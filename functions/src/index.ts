@@ -3,10 +3,9 @@ import * as admin from 'firebase-admin';
 import * as express from 'express';
 import expiration from './expiration'
 import generate from './generate';
-import register from './register';
+import register from'./register';
 
 const app = express();
-app.use(express.json())
 admin.initializeApp({
   credential: admin.credential.applicationDefault()
 });
@@ -33,4 +32,4 @@ app.post('/:pin', (request, response) => {
 });
 
 export const pins = functions.https.onRequest(app);
-export const expireOldPins = functions.pubsub.schedule('every 1 hour').onRun(expiration(db));
+export const expireOldPins = functions.pubsub.schedule('every 1 hours').onRun(expiration(db));
