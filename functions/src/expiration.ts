@@ -12,7 +12,7 @@ export default (db : FirebaseFirestore.Firestore) => {
     if (docs.size > 0) {
       const batch = db.batch();
       docs.forEach((doc) => { 
-        console.log(`Expiring pin ${doc}`);
+        console.log(`Expiring pin ${doc.ref}`);
         return batch.delete(doc.ref);
       });
       await batch.commit()
