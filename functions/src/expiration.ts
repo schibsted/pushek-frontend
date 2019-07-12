@@ -8,16 +8,21 @@ export default (db : FirebaseFirestore.Firestore) => {
       .get();
   };
 
-  const deleteDocs = async (docs : FirebaseFirestore.QuerySnapshot) : Promise<number> => {
+  const expirePin = (pinRef : FirebaseFirestore.DocumentReference, batch : FirebaseFirestore.WriteBatch) : Promise<void> => {
+    console.log(`Expiring pin ${pinRef}`);
+    return db.collection('pins')
+      .doc(pinRef.id)
+      .collection('devices')
+      .get()
+      .then(devices => devices.forEach(device => batch.delete(device.ref)));
+  }
+
+  const deleteDocs = async (docs : FirebaseFirestore.QuerySnapshot) : Promise<void> => {
     if (docs.size > 0) {
       const batch = db.batch();
-      docs.forEach((doc) => { 
-        console.log(`Expiring pin ${doc.ref}`);
-        return batch.delete(doc.ref);
-      });
+      docs.forEach((doc) => expirePin(doc.ref, batch));
       await batch.commit()
     }
-    return docs.size; 
   };
 
   return async () => {
