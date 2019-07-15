@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $(dirname $0)/../functions
+fd . src | entr -rd $(dirname $0)/bf
