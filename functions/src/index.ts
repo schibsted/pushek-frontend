@@ -31,5 +31,5 @@ app.post('/:pin', (request, response) => {
     });
 });
 
-export const pins = functions.https.onRequest(app);
-export const expireOldPins = functions.pubsub.schedule('every 1 hours').onRun(expiration(db));
+export const pins = functions.region('europe-west1').https.onRequest(app);
+export const expireOldPins = functions.region('europe-west1').pubsub.schedule('every 1 hours').onRun(expiration(db));
