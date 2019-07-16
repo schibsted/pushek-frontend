@@ -5,7 +5,14 @@ These are the functions supporting push testing tool
 ## Configuration
 
 The functions will use your default `admin()` [privileges](https://firebase.google.com/docs/functions/local-emulator#set_up_admin_credentials_optional). 
-For pushing the 
+
+### Example push
+
+If you want to use `/examplePush` endpoint with credentials from some other project/account, just set the retrieved json under appropriate configuration key:
+
+```
+firebase functions:config:set "$(cat credentials-file.json)"
+```
 
 ## API
 
