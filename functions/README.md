@@ -2,6 +2,11 @@
 
 These are the functions supporting push testing tool
 
+## Configuration
+
+The functions will use your default `admin()` [privileges](https://firebase.google.com/docs/functions/local-emulator#set_up_admin_credentials_optional). 
+For pushing the 
+
 ## API
 
 * `POST /pins` - creates a pin number under which devices can register
@@ -33,7 +38,7 @@ The project consists of following
 
 ## Development
 
-The project is easiest to use with ![nix](https://nixos.org/nix/)
+The project is easiest to use with [nix](https://nixos.org/nix/)
 
  * Install nix
  * Invoke `nix-shell` in root project directory

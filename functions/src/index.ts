@@ -38,4 +38,9 @@ app.post('/:pin', async (request, response) => {
 
 export const pins = functions.region('europe-west1').https.onRequest(app);
 export const expireOldPins = functions.region('europe-west1').pubsub.schedule('every 1 hours').onRun(expiration(db));
-export const examplePush = functions.region('europe-west1').https.onRequest(pushApp(admin.messaging()));
+
+const credentials = functions.config().pusher.credentials;
+const pushingApp = admin.initializeApp({
+  credential: credentials ? admin.credential.cert(credentials) : admin.credential.applicationDefault()
+}, 'pushingApp');
+export const examplePush = functions.region('europe-west1').https.onRequest(pushApp(admin.messaging(pushingApp)));
