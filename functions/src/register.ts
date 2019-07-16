@@ -4,6 +4,14 @@ interface Device {
   systemName: string;
 }
 
+export class PinDoesntExistError extends Error {
+  constructor(m: string) {
+    super(m);
+
+    Object.setPrototypeOf(this, PinDoesntExistError.prototype);
+  }
+}
+
 const assertPresent = (fieldName : string, val : any) => {
   if (!val) {
     throw new Error(`Field ${fieldName} should be present on the device`);
@@ -16,24 +24,24 @@ const validateDevice = (device : Device) => {
   assertPresent("systemName", device.systemName);
 };
 
-export default (db : FirebaseFirestore.Firestore) => {
+export const register = (db : FirebaseFirestore.Firestore) => {
   const pinExists = (pin : string) : Promise<boolean> => db.collection('pins')
     .doc(pin)
     .get()
     .then(doc => { 
-      if (!doc.exists) {
-        throw new Error(`Pin ${pin} doesn't exist`);
-      }
-      return true;
+      return doc.exists;
     });
 
   return async (pin: string, device : Device) : Promise<boolean> => {
     validateDevice(device);
-    return pinExists(pin)
-      .then(() => db.collection('pins')
+    const exists = await pinExists(pin);
+    if (!exists) {
+      throw new PinDoesntExistError(`Pin ${pin} doesn't exist`);
+    }
+    await db.collection('pins')
         .doc(pin)
         .collection('devices')
-        .add(device))
-      .then(() => true);
+        .add(device);
+    return true;
   }
 }
