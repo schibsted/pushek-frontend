@@ -32,7 +32,11 @@ class MainActivity : AppCompatActivity() {
     private val pushReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d(TAG, "Message received in activity. Yay!")
-
+            var result = "Message received with:\n"
+            intent?.extras?.keySet()?.forEach {
+                result += "$it : ${intent.extras?.getString(it)}"
+            }
+            message.text = result
         }
     }
 

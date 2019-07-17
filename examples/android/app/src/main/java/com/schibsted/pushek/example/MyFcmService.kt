@@ -23,6 +23,14 @@ class MyFcmService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         Log.d(TAG, "Messaged received $remoteMessage")
         val intent = Intent(ACTION_SEND_PUSH_MSG)
+        remoteMessage?.data?.forEach {
+            intent.putExtra(it.key, it.value)
+        }
+
+        remoteMessage?.notification?.let {
+            intent.putExtra("title", it.title)
+            intent.putExtra("body", it.body)
+        }
 
         broadcaster.sendBroadcast(intent)
     }
