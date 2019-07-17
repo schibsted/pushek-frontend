@@ -8,15 +8,29 @@ export default (messaging : admin.messaging.Messaging) => {
     response.status(500).send(err);
   };
 
+  const pushers : {[key: string]: (token: string, body: any) => Promise<any>}
+    = {
+      "FCM": (token, body) => {
+        return messaging.sendToDevice([token], { data: body })
+      },
+      "APNS": () => {
+        return Promise.reject("APNS not implemented yet");
+      }
+    }
+
   const app = express();
   app.post('/', (request, response) => {
-    const { deviceToken, body } = request.body;
+    const { deviceToken, body, pusherType } = request.body;
     if (!deviceToken) {
       handleError(response)(new Error("No device token provided"));
       return;
     }
+    if (!pusherType) {
+      handleError(response)(new Error("No pusher type provided"));
+      return;
+    }
     console.log(`Sending push "${JSON.stringify(body)}" to token: ${deviceToken}`);
-    return messaging.sendToDevice([deviceToken], { data: body })
+    return pushers[pusherType](deviceToken, body)
       .then(() => {
         response.status(200).send("ok");
       })
