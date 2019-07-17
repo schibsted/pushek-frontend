@@ -23,6 +23,7 @@ firebase functions:config:set "$(cat credentials-file.json)"
   "token":...
   "systemName":...
   "systemVersion":...
+  "pusherType": "FCM" | "APNS"
 }
 ```
 * `POST /examplePush` - the endpoint realizing assumed push endpoint
@@ -34,8 +35,9 @@ To be used with this project the tested push solution should expose following en
 that accepts following input format:
 ```
 {
-  "deviceToken":...
-  "body":...
+  "deviceToken":...,
+  "body":...,
+  "pusherType":....
 }
 ```
 
