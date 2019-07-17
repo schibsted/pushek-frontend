@@ -14,7 +14,9 @@ const db = admin.firestore();
 const generateNonExistingPin = generate(db);
 app.post('/', (request, response) => {
   generateNonExistingPin()
-    .then(p => response.send(p))
+    .then(p => response
+      .set('Content-Type', 'text/plain')
+      .send(p))
     .catch(err => {
       console.log(err, err.stack);
       return response.status(500).send({ error: err }) 
