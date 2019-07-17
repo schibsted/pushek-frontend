@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             .put("token", token)
             .put("systemName", "Android")
             .put("systemVersion", Build.VERSION.RELEASE)
-            .put("pusherType", "fcm")
+            .put("pusherType", "FCM")
             .toString(2)
 
         val requestBody = json.toRequestBody("application/json".toMediaType())
