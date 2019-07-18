@@ -11,7 +11,7 @@ The functions will use your default `admin()` [privileges](https://firebase.goog
 If you want to use `/examplePush` endpoint with credentials from some other project/account, just set the retrieved json under appropriate configuration key:
 
 ```
-firebase functions:config:set "$(cat credentials-file.json)"
+firebase functions:config:set pusher.fcm.credentials="$(cat credentials-file.json)"
 ```
 
 ## API
