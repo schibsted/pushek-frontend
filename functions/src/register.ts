@@ -2,6 +2,7 @@ interface Device {
   token: string;
   systemVersion: string;
   systemName: string;
+  pusherType: string;
 }
 
 export class PinDoesntExistError extends Error {
@@ -18,10 +19,18 @@ const assertPresent = (fieldName : string, val : any) => {
   }
 }
 
+const assertInSet = (name : string, val : string, acceptedValues: Set<string>) => {
+  if (!acceptedValues.has(val)) {
+    throw new Error(`${val} is not accepted as ${name}. Should be one of ${acceptedValues}`) 
+  }
+};
+
 const validateDevice = (device : Device) => {
   assertPresent("token", device.token);
   assertPresent("systemVersion", device.systemVersion);
   assertPresent("systemName", device.systemName);
+  assertPresent("pusherType", device.pusherType);
+  assertInSet("pusherType", device.pusherType, new Set(["FCM", "APNS"]));
 };
 
 export const register = (db : FirebaseFirestore.Firestore) => {
