@@ -1,6 +1,6 @@
 # Pushek
 
-This is a push testing tool reducing the burden of understanding the technical side of push messaging. It is targeted for non-technical people. However, require technical people to set it up.
+This is a push testing tool reducing the burden of understanding the technical side of push messaging. It is targeted for non-technical people. However, requires technical people to set it up.
 
 ## What problem are we trying to solve?
 
