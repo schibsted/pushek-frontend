@@ -1,44 +1,63 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Pushek
 
-## Available Scripts
+This is a push testing tool reducing the burden of understanding the technical side of push messaging. It is targeted for non-technical people. However, require technical people to set it up.
 
-In the project directory, you can run:
+## What problem are we trying to solve?
 
-### `npm start`
+## Component design
+Below drawings show relevant components in both scenarions. First one is an example that require minimum work:
+- Create new Firebase project
+- Setup authorisation in pusher and mobile apps
+- Deploy on Firebase
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+It's a good start to play with the tool and test capabilities :nerd_face:
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+If you want to integrate this tool with your own backend and mobile apps, look at Production drawing.
+It requires extra stesp:
+- In your backend system, provide two service. One for getting push config. Second for sending pushes. Go to [Setup](#backend)
 
-### `npm test`
+### Pushek Web
+This is a web app that testers will interact with most of the time. It creates PINs that enable pairing with mobile devices. Next, lists all devices paired with previously generated PIN. Lastly, call associated pusher to send push messages.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Pushek Store
+This is a Firestore database where we store generated PINs and associated devices. The most relevant information of each device is token. Token identify device and app where pusher send messages.
 
-### `npm run build`
+### Pushek Registry
+This is a cloud function responsible for registering mobile devices. It requires a PIN, token, system info and push type. In case iOS devices we support both APNS and FCM integrations.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+PIN is manually entered by tester on mobile device. Our sample app shows a simple field to take the PIN but it's totally up to you how your app will take it e.g. could be a dialog shown on long press in the setting menu.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### Pushek PIN generator
+This is cloud function generating PIN numbers used to pair with mobile devices. New PIN is generate for every web app session. It has expiration time set. See [functions](functions) for more details.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Pushek Pusher
+This is cloud function that talks to FCM and APN sending push messages. In production setup it can be replaced with 3rd party service.
 
-### `npm run eject`
+### Pushek Mobile
+This is a sample app representing both Android and iOS.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+![Componenets](docs/components.jpg)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Flow design
+![Flow](docs/flow.jpg)
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Project structure
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Root of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). 
 
-## Learn More
+### Cloud functions
+Backend for this tool is written in `/functions` as Cloud Functions and deployed on Firebase.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Mobile
+Sample mobile apps for Android and iOS(TBD) are located in `/examples` folder.
+For more details about Android sample go to [Android sample doc](examples/android/README.md)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Setup
+
+### Web app
+
+### Backend
+
+### Mobile
+
+Go to [Android sample doc](examples/android/README.md)
