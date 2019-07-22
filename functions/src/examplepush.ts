@@ -20,8 +20,8 @@ export default (messaging : admin.messaging.Messaging) => {
 
   const app = express();
   app.post('/', (request, response) => {
-    const { deviceToken, body, pusherType } = request.body;
-    if (!deviceToken) {
+    const { token, body, pusherType } = request.body;
+    if (!token) {
       handleError(response)(new Error("No device token provided"));
       return;
     }
@@ -29,8 +29,8 @@ export default (messaging : admin.messaging.Messaging) => {
       handleError(response)(new Error("No pusher type provided"));
       return;
     }
-    console.log(`Sending push "${JSON.stringify(body)}" to token: ${deviceToken}`);
-    return pushers[pusherType](deviceToken, body)
+    console.log(`Sending push "${JSON.stringify(body)}" to token: ${token}`);
+    return pushers[pusherType](token, body)
       .then(() => {
         response.status(200).send("ok");
       })
