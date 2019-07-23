@@ -1,39 +1,55 @@
 import React from 'react';
-import pushek from './puszek.gif';
 import './App.css';
 import Button from '@material-ui/core/Button';
-import firebase from 'firebase';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Fab from '@material-ui/core/Fab';
+import Icon from '@material-ui/core/Icon';
+import CssBaseline from "@material-ui/core/CssBaseline";
+import {Device} from "./types/Device";
+import DeviceList from "./components/DeviceList";
+import Firebase from "./models/Firebase";
+import FirebaseFunctions from "./models/FirebaseFunctions";
 
+interface PushekState {
+  devices: Array<Device>;
+  pin?: number;
+}
 
-firebase.initializeApp({
-  apiKey: 'API_KEY',
-  authDomain: 'AUTH_DOMAIN',
-  projectId: 'PROJECT_ID'
-});
+class App extends React.Component<{}, PushekState> {
 
-var db = firebase.firestore();
-
-class App extends React.Component {
-
+  state: PushekState = {
+    devices: []
+  };
 
   loadDevices() {
-    db.collection("devices").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-          console.log(`${doc.id} => ${doc.data().name}`);
-      });
-  });
+
+    const firebase = new Firebase();
+
+    console.log(firebase.getDevices());
+
+  }
+
+  generatePin() {
+    const firebaseFunctions = new FirebaseFunctions();
+    const pin = firebaseFunctions.generatePin();
+  }
+
+  componentDidMount(): void {
+    this.loadDevices();
   }
 
   render() {
-    return <List>
-      <ListItem button>
-        <ListItemText primary="Item 1"></ListItemText>
-      </ListItem>
+    return <React.Fragment>
+
+      <CssBaseline/>
+
+      <Fab color="primary" aria-label="Generate pin" onClick={this.generatePin}>
+        <Icon>vpn_key</Icon>
+      </Fab>
+
+      <DeviceList devices={this.state.devices}/>
       <Button variant="contained" color="primary" onClick={this.loadDevices} >Hello Johannes!</Button>
-    </List>
+
+    </React.Fragment>
   }
 }
 
