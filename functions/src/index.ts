@@ -5,10 +5,11 @@ import expiration from './expiration'
 import generate from './generate';
 import * as register from'./register';
 import pushApp from './examplepush';
-import * as cors from 'cors';
+const cors = require("cors");
 
-const corsHandler = cors({origin: true});
 const app = express();
+app.use(cors())
+
 admin.initializeApp({
   credential: admin.credential.applicationDefault()
 });
@@ -16,16 +17,14 @@ const db = admin.firestore();
 
 const generateNonExistingPin = generate(db);
 app.post('/', (request, response) => {
-  corsHandler(request, response, () => {
-    generateNonExistingPin()
-        .then(p => response
-            .set('Content-Type', 'text/plain')
-            .send(p))
-        .catch(err => {
-          console.log(err, err.stack);
-          return response.status(500).send({ error: err })
-        });
-  })
+  generateNonExistingPin()
+    .then(p => response
+      .set('Content-Type', 'text/plain')
+      .send(p))
+    .catch(err => {
+      console.log(err, err.stack);
+      return response.status(500).send({ error: err })
+    });
 });
 
 const registerDevice = register.register(db);
