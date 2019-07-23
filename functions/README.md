@@ -35,7 +35,7 @@ To be used with this project the tested push solution should expose following en
 that accepts following input format:
 ```
 {
-  "deviceToken":...,
+  "token":...,
   "body":...,
   "pusherType":....
 }
