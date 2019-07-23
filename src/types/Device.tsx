@@ -1,3 +1,6 @@
 export type Device = {
-    name: String
+    pusherType: String;
+    systemName: String;
+    systemVersion: String;
+    token: String;
 }
