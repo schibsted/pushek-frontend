@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '12'
+before_install:
+- npm i -g firebase-tools
+script:
+- npm test
+- cd function && npm test
+deploy:
+  provider: firebase
+  api_key:
+    secure: D+uqkXgtpE9XPgQTaw1SiPxeVK77epFUH1U9Vq7EeSy4ORNfvZepaDaVXYHuY0OJ+Odamux6kQxgQX7phyo4Vfu/xhhHsboBGZJpUzAK5xHLQ68eC2O9px6q6+Zxj3LOCX8guD2fMuQfzN+mMbhU61uDIjPoGfcOo8UfrGcPq68jdqc6Wog12IYxLzyPHD3bYY8fx7e53WA0L6u1HOMCHFeQ2xljrpxG1F4jtc2WaFOUkFlWGnM55ynBlU4RpBQpUAOEEemssQIT+6jGJz/g3V1C4PxZYowtvZpOhcGfwqav50WexEoWsVhKbSqNA9/wLtPnm8LIMAwdADKdlnt7ICKSzNS/wfb5L/wTwc60Ob02N/Du3IlfTLebl/6S7fISXPvjkrsue7VNBQLslBrfyugeYjead4c5tx4UH0KA1E5XUoALzlYMiOBesjKmYksA0jG2eSm8RA/g29jn7cGu8tcYl+svBMi0pkoJVwItYHQOol+wcmCDxHs/fjtqiOn18J6i6maX+0PzXTrtsXPnf2YW5liJlBHyiN8pTdlwZy3XXQnuSmFONlUMnhplVE5tjE/jjj3hM4SuIkGZb0TCI9bKsWD/p/Gu3EM8zdZwTYx4dvGs0V4yePLnkMgR1FUniXC5MqFUUHHF7qYGsYLmafL8utEGEE8H4pgfN3IUQek=
