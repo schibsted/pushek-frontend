@@ -1,5 +1,4 @@
 import React from 'react';
-import pushek from './puszek.gif';
 import './App.css';
 import Button from '@material-ui/core/Button';
 import firebase from 'firebase';
