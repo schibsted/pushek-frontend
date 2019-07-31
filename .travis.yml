@@ -3,7 +3,10 @@ node_js:
 - '12'
 script:
 - npm test
-- cd functions && npm install && npm test && cd ..
+- cd functions && npm test && cd ..
+before_deploy:
+  - npm run build
+  - cd functions && npm install && cd -
 deploy:
   provider: firebase
   token:
