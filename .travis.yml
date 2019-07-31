@@ -3,7 +3,7 @@ node_js:
 - '12'
 script:
 - npm test
-- cd function && npm test
+- cd functions && npm test
 deploy:
   provider: firebase
   api_key:
