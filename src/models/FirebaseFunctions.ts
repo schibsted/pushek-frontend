@@ -24,13 +24,13 @@ class FirebaseFunctions {
 
         const device: DeviceTypeList = {
             android: {
-                "token": Math.random()+"a",
+                "token": Math.random().toString().replace('.', '')+"a",
                 "systemName": "Android",
                 "systemVersion": "12.0.1",
                 "pusherType": "FCM"
             },
             ios: {
-                "token": Math.random()+"i",
+                "token": Math.random().toString().replace('.', '')+"i",
                 "systemName": "IOS",
                 "systemVersion": "20.0.1",
                 "pusherType": "APNS"
