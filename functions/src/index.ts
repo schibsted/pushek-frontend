@@ -5,8 +5,11 @@ import expiration from './expiration'
 import generate from './generate';
 import * as register from'./register';
 import pushApp from './examplepush';
+const cors = require("cors");
 
 const app = express();
+app.use(cors())
+
 admin.initializeApp({
   credential: admin.credential.applicationDefault()
 });
@@ -20,13 +23,13 @@ app.post('/', (request, response) => {
       .send(p))
     .catch(err => {
       console.log(err, err.stack);
-      return response.status(500).send({ error: err }) 
+      return response.status(500).send({ error: err })
     });
 });
 
 const registerDevice = register.register(db);
 app.post('/:pin', async (request, response) => {
-  try { 
+  try {
     await registerDevice(request.params.pin, request.body)
     return response.send("ok");
   } catch (err) {
