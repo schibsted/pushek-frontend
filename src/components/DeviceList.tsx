@@ -7,20 +7,23 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Icon from "@material-ui/core/Icon";
 import {ListItemSecondaryAction, IconButton} from "@material-ui/core";
+import Toolbar from "@material-ui/core/Toolbar";
 
 type DeviceListProps = {
     devices: Array<Device>
+    checkedDevices: Array<String>
+    listItemClick: Function
 }
 
-const DeviceList: FunctionComponent<DeviceListProps> = ({devices = []}) => {
+const DeviceList: FunctionComponent<DeviceListProps> = ({devices = [], checkedDevices = [], listItemClick}) => {
 
     return (
-        <List>
+        <List className="Device-list">
             {
                 devices.map((device) => (
-                    <ListItem button>
+                    <ListItem button onClick={() => listItemClick(device.token)}>
                         <ListItemIcon>
-                            <Checkbox edge="start"/>
+                            <Checkbox edge="start" checked={checkedDevices.indexOf(device.token) !== -1}/>
                         </ListItemIcon>
                         <ListItemText
                             primary={`${device.systemName} ${device.systemVersion} ${device.pusherType}`}>

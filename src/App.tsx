@@ -14,13 +14,15 @@ import TextField from "@material-ui/core/TextField";
 
 interface PushekState {
     devices: Array<Device>;
+    checkedDevices: Array<String>;
     pin?: string;
 }
 
 class App extends React.Component<{}, PushekState> {
 
     state: PushekState = {
-        devices: []
+        devices: [],
+        checkedDevices: [],
     };
 
     addDevice(type: string) {
@@ -50,25 +52,42 @@ class App extends React.Component<{}, PushekState> {
         return pin;
     }
 
+    push() {
+        const body = {"content": "test content"};
+
+        this.state.devices.filter((device) => this.state.checkedDevices.indexOf(device.token) !== -1).forEach(device => FirebaseFunctions.push(device, body));
+    }
+
     async componentDidMount() {
 
         const pin = await this.getPin();
-
-        this.setState({pin});
-
         const firebase = new Firebase();
 
         firebase.getDevices(pin,
-            (devices: Array<Device>) => this.setState({devices})
+            (devices: Array<Device>) => this.setState({devices, pin})
         );
     }
+
+    handleListElementClick = (token: String) => {
+
+        const currentIndex = this.state.checkedDevices.indexOf(token);
+        const newChecked = [...this.state.checkedDevices];
+
+        if (currentIndex === -1) {
+            newChecked.push(token);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        this.setState({checkedDevices: newChecked});
+    };
 
     render() {
         return <React.Fragment>
 
             <CssBaseline/>
             <Container maxWidth="lg">
-                <Toolbar className="toolbar">
+                <Toolbar>
                     <Typography
                         component="h2"
                         variant="h5"
@@ -89,9 +108,6 @@ class App extends React.Component<{}, PushekState> {
                     <Button variant="outlined" className="button" onClick={() => this.generatePin()}>
                         <Icon>vpn_key</Icon>
                     </Button>
-                    <Button variant="outlined" className="button">
-                        <Icon>send</Icon>
-                    </Button>
                     <Button variant="outlined" className="button" onClick={() => this.addDevice('android')}>
                         <Icon>add</Icon>
                         <Icon>android</Icon>
@@ -102,7 +118,12 @@ class App extends React.Component<{}, PushekState> {
                     </Button>
                 </Toolbar>
                 <main>
-                    <DeviceList devices={this.state.devices}/>
+                    <DeviceList devices={this.state.devices} checkedDevices={this.state.checkedDevices}
+                                listItemClick={this.handleListElementClick}/>
+
+                    <Button variant="outlined" className="button" onClick={() => this.push()}>
+                            Send push notification
+                    </Button>
                 </main>
                 <footer>
                     <Container maxWidth="lg">
