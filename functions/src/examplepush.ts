@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import * as apn from 'apn';
+const cors = require("cors");
 
 type MessageDefinition = {
   [key: string]: FieldDefinition
@@ -71,6 +72,7 @@ export default (config : functions.config.Config) => {
     }
 
   const app = express();
+  app.use(cors());
   app.post('/', (request, response) => {
     const { token, body, pusherType } = request.body;
     if (!token) {

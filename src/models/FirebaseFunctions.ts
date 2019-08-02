@@ -24,13 +24,13 @@ class FirebaseFunctions {
 
         const device: DeviceTypeList = {
             android: {
-                "token": "token",
+                "token": Math.random()+"a",
                 "systemName": "Android",
                 "systemVersion": "12.0.1",
                 "pusherType": "FCM"
             },
             ios: {
-                "token": "token",
+                "token": Math.random()+"i",
                 "systemName": "IOS",
                 "systemVersion": "20.0.1",
                 "pusherType": "APNS"
@@ -40,7 +40,18 @@ class FirebaseFunctions {
         if(typeof device[system] !== "undefined") {
             FirebaseFunctions.getAxiosInstance().post(`/pins/${pin}`, device[system]);
         }
-    }
+    };
+
+    static push = async (device: Device, body: Object) => {
+
+        const request = {
+            token: device.token,
+            pusherType: device.pusherType,
+            body,
+        };
+
+        FirebaseFunctions.getAxiosInstance().post(`/examplePush`, request);
+    };
 
 }
 
