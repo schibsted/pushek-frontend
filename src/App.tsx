@@ -1,7 +1,5 @@
-import React from 'react';
-import './App.css';
+import React, {SyntheticEvent} from 'react';
 import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {Device} from "./types/Device";
 import DeviceList from "./components/DeviceList";
@@ -11,10 +9,20 @@ import {Container} from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import ConfigurationForm from "./components/ConfigurationForm";
+import Divider from "@material-ui/core/Divider";
+import {ConfigurationField} from "./types/ConfigurationField";
+
+
+interface IField {
+    [key: string]: any;
+}
 
 interface PushekState {
     devices: Array<Device>;
-    checkedDevices: Array<String>;
+    checkedDevices: Array<string>;
+    fieldsConfiguration: Object;
+    configuration: Array<ConfigurationField>
     pin?: string;
 }
 
@@ -23,13 +31,9 @@ class App extends React.Component<{}, PushekState> {
     state: PushekState = {
         devices: [],
         checkedDevices: [],
+        configuration: [],
+        fieldsConfiguration: {},
     };
-
-    addDevice(type: string) {
-        if (typeof this.state.pin !== 'undefined') {
-            FirebaseFunctions.registerDevice(this.state.pin, type);
-        }
-    }
 
     async getPin(): Promise<string> {
 
@@ -39,36 +43,63 @@ class App extends React.Component<{}, PushekState> {
 
         let pin = window.sessionStorage.getItem('pin');
         if (pin === null) {
-            pin = await this.generatePin();
+            pin = await FirebaseFunctions.generatePin();
+            window.sessionStorage.setItem('pin', pin);
         }
 
         return pin;
     }
 
-    async generatePin(): Promise<string> {
-        const pin = await FirebaseFunctions.generatePin();
-        this.setState({pin});
-        window.sessionStorage.setItem('pin', pin);
-        return pin;
-    }
+    validate = () => {
 
-    push() {
-        const body = {"content": "test content"};
+        const validatedConfiguration = this.state.configuration.map(field => {
+            field.error = (field.required && field.value === '');
+            return field;
+        });
 
-        this.state.devices.filter((device) => this.state.checkedDevices.indexOf(device.token) !== -1).forEach(device => FirebaseFunctions.push(device, body));
-    }
+        this.setState({configuration: validatedConfiguration});
+    };
+
+    push = () => {
+
+        this.validate();
+
+        if(this.state.configuration.filter(field => field.error).length === 0) {
+            this.state.devices.filter((device) =>
+                this.state.checkedDevices.indexOf(device.token) !== -1)
+                .forEach(device => FirebaseFunctions.push(device, this.state.configuration.reduce(
+                    (body: IField, field: ConfigurationField) => {
+                        body[field.name]=field.value;
+                        return body;
+                    }, {})
+                ));
+        }
+
+    };
 
     async componentDidMount() {
 
         const pin = await this.getPin();
         const firebase = new Firebase();
+        const fieldsConfiguration: IField = await FirebaseFunctions.getPushDefinition();
+
+        const configuration = Object.keys(fieldsConfiguration).map((fieldName): ConfigurationField => {
+            return {
+                name: fieldName,
+                value: '',
+                required: typeof fieldsConfiguration[fieldName]['required'] !== 'undefined',
+                error: false,
+            };
+        });
+
+        this.setState({pin, fieldsConfiguration, configuration});
 
         firebase.getDevices(pin,
-            (devices: Array<Device>) => this.setState({devices, pin})
+            (devices: Array<Device>) => this.setState({devices})
         );
     }
 
-    handleListElementClick = (token: String) => {
+    handleListElementClick = (token: string) => {
 
         const currentIndex = this.state.checkedDevices.indexOf(token);
         const newChecked = [...this.state.checkedDevices];
@@ -82,6 +113,19 @@ class App extends React.Component<{}, PushekState> {
         this.setState({checkedDevices: newChecked});
     };
 
+    handleFormChange = (event: SyntheticEvent, fieldName: string) => {
+
+        const element = event.target as HTMLInputElement;
+        const fields = [...this.state.configuration.map(field => {
+            if (field.name === fieldName) {
+                field.value = element.value;
+            }
+            return field;
+        })];
+
+        this.setState({configuration: fields});
+    };
+
     render() {
         return <React.Fragment>
 
@@ -90,48 +134,32 @@ class App extends React.Component<{}, PushekState> {
                 <Toolbar>
                     <Typography
                         component="h2"
-                        variant="h5"
+                        variant="subtitle1"
                         color="inherit"
-                        align="center"
                         noWrap
                         style={{flex: 1}}
                     >
                         Pushek
                     </Typography>
                     <TextField
-                        id="outlined-name"
                         label="Pin"
                         value={this.state.pin}
                         margin="normal"
-                        // variant="outlined"
                     />
-                    <Button variant="outlined" className="button" onClick={() => this.generatePin()}>
-                        <Icon>vpn_key</Icon>
-                    </Button>
-                    <Button variant="outlined" className="button" onClick={() => this.addDevice('android')}>
-                        <Icon>add</Icon>
-                        <Icon>android</Icon>
-                    </Button>
-                    <Button variant="outlined" className="button" onClick={() => this.addDevice('ios')}>
-                        <Icon>add</Icon>
-                        <Icon>phone_iphone</Icon>
-                    </Button>
                 </Toolbar>
                 <main>
+                    <Divider component="hr"/>
                     <DeviceList devices={this.state.devices} checkedDevices={this.state.checkedDevices}
                                 listItemClick={this.handleListElementClick}/>
+                    <Divider component="hr"/>
 
-                    <Button variant="outlined" className="button" onClick={() => this.push()}>
-                            Send push notification
+                    <ConfigurationForm fields={this.state.configuration}
+                                       onInputChange={this.handleFormChange}
+                                       onInputBlur={this.validate}/>
+                    <Button href="#" variant="outlined" onClick={() => this.push()}>
+                        Send push notification
                     </Button>
                 </main>
-                <footer>
-                    <Container maxWidth="lg">
-                        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                            Open source software
-                        </Typography>
-                    </Container>
-                </footer>
             </Container>
         </React.Fragment>
     }
