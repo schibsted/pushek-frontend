@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- '12'
+script:
+- npm test
+- cd functions && npm test && cd ..
+before_deploy:
+  - npm run build
+  - cd functions && npm install && cd -
+deploy:
+  provider: firebase
+  token:
+    secure: Ymwcb+oVnmpdLyk0QFapF5Cd/jh2RX0T+l/OZ7EM0Xym/tqQfdad371wZRBABpRf6WOt3KlSlvQF6a9ya1fVbgAKVO0E9gsmAG1d4/680hcSPEZ8VnnNFwgbdmmcdmITU50wulUJIRvHKEpMd5yBZM6kv3tddbiWxodASeJOhBC0CqAp5rE9LZguYG1YGy8Kzf5kRoqVnSgx6Yzdxu/amswDHTUoPvcqTjb1lpHhxVrVUbIqxSTQrqX4/nar0+9heD+LwR68WEXq7/ryez8GlCNf7Ref3OIk0qOpH1zk0L0/M8cHMrw1wpSQuKmqIgON3ToAIzdaBPLiUAPbGz603UMdPxodmK/f+IYZHqJgah7Iuen9b72xkndrdDoyxZcLME41ltDfKhZbAkXsmwxKTXLsRVJ2Iv6rIfyHB5KjissLQ39vRhaFcqHQqOiiZRTebY2Sf9r+hvlW3uydLzgHDKFsXqVqEgCJpBHsRygwKW9IUjLltKbnk7HQGcvhc1ED68IT/r6M6UmSiCRAtF7b3tCTFm99jSZoYlF2e9ofd/c5IbT0nf7F8hI+ZbJqbzoh8+XFDIwCDR2b2SuwJFA78Sso3wpmwd4Oy3dXTLHxLGAxqVbIdTiI5EQYcgQz25YCIF6VJNEkccTTZYpXhbHDyczUeIawNZnOLKNUs1yJePg=
+  project: pushek-820bb
+  skip_cleanup: true
