@@ -90,7 +90,7 @@ export default (config : functions.config.Config) => {
       })
       .catch(handleError(response));
   });
-  
+
   app.get('/', (request, response) => {
     return response.send(definition);
   });
