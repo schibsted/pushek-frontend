@@ -2,10 +2,6 @@ import {Device} from "../types/Device";
 
 const axios = require('axios');
 
-interface DeviceTypeList {
-    [key: string]: Device
-}
-
 class FirebaseFunctions {
 
     static getAxiosInstance() {
@@ -20,28 +16,6 @@ class FirebaseFunctions {
         return response.data;
     }
 
-    static registerDevice = async (pin: string, system: string) => {
-
-        const device: DeviceTypeList = {
-            android: {
-                "token": Math.random().toString().replace('.', '')+"a",
-                "systemName": "Android",
-                "systemVersion": "12.0.1",
-                "pusherType": "FCM"
-            },
-            ios: {
-                "token": Math.random().toString().replace('.', '')+"i",
-                "systemName": "IOS",
-                "systemVersion": "20.0.1",
-                "pusherType": "APNS"
-            }
-        };
-
-        if(typeof device[system] !== "undefined") {
-            FirebaseFunctions.getAxiosInstance().post(`/pins/${pin}`, device[system]);
-        }
-    };
-
     static push = async (device: Device, body: Object) => {
 
         const request = {
@@ -50,9 +24,15 @@ class FirebaseFunctions {
             body,
         };
 
-        FirebaseFunctions.getAxiosInstance().post(`/examplePush`, request);
+        const response = await FirebaseFunctions.getAxiosInstance().post(`/examplePush`, request);
+        return response.data;
     };
 
+    static getPushDefinition = async () => {
+
+        const response = await FirebaseFunctions.getAxiosInstance().get(`/examplePush`);
+        return response.data;
+    }
 }
 
 export default FirebaseFunctions;

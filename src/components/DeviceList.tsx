@@ -7,7 +7,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Icon from "@material-ui/core/Icon";
 import {ListItemSecondaryAction, IconButton} from "@material-ui/core";
-import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 
 type DeviceListProps = {
     devices: Array<Device>
@@ -17,11 +17,21 @@ type DeviceListProps = {
 
 const DeviceList: FunctionComponent<DeviceListProps> = ({devices = [], checkedDevices = [], listItemClick}) => {
 
-    return (
-        <List className="Device-list">
+    let devicesList = <Typography
+        component="p"
+        variant="inherit"
+        color="inherit"
+        noWrap
+        style={{flex: 1, margin: 20}}
+    >
+        Empty device list
+    </Typography>;
+
+    if(devices.length > 0) {
+        devicesList =  <List className="Device-list" component="ul">
             {
                 devices.map((device) => (
-                    <ListItem button onClick={() => listItemClick(device.token)}>
+                    <ListItem button key={device.token} onClick={() => listItemClick(device.token)} component="ul">
                         <ListItemIcon>
                             <Checkbox edge="start" checked={checkedDevices.indexOf(device.token) !== -1}/>
                         </ListItemIcon>
@@ -29,7 +39,7 @@ const DeviceList: FunctionComponent<DeviceListProps> = ({devices = [], checkedDe
                             primary={`${device.systemName} ${device.systemVersion} ${device.pusherType}`}>
                         </ListItemText>
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="Comments">
+                            <IconButton href="#" edge="end" aria-label="Comments">
                                 {device.systemName.toLowerCase() === 'android' ?
                                     <Icon>android</Icon>
                                     :
@@ -40,8 +50,10 @@ const DeviceList: FunctionComponent<DeviceListProps> = ({devices = [], checkedDe
                     </ListItem>
                 ))
             }
-        </List>
-    );
+        </List>;
+    }
+
+    return devicesList;
 };
 
 export default DeviceList;
